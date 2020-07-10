@@ -1,0 +1,83 @@
+<template>
+    <lightning-card>
+        <div class="slds-m-around_medium">
+            <div class="slds-card">
+                <div class="slds-p-around_medium">
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_5-of-12">
+                            <lightning-combobox name="inputObj" label="Select an Object Name"
+                                options={AllObjectsOptions} onchange={handleObjects}>
+                            </lightning-combobox>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-card">
+                <div class="slds-p-around_medium">
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_5-of-12">
+                            <lightning-combobox name="input1" label="Select the Record" options={accountOptions}
+                                onblur={handlevalidation} onchange={handleChange}>
+                            </lightning-combobox>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <template for:each={Objectfileds} for:item="item">
+                <div key={item.id}>
+                    <div class="slds-card">
+                        <div class="table-wrapper">
+                            <table class="fl-table">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            {item.label}
+                                        </td>
+                                        <td>
+                                            <div class="slds-grid slds-gutters">
+                                                <div class="slds-col slds-size_5-of-12">
+                                                    <lightning-input class="filedClass" name={item.label}>
+                                                    </lightning-input>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <lightning-input type="checkbox" name={item.label} onchange={handleFiled}>
+                                            </lightning-input>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </template>
+<br /><br /><br />
+<template for:each={childlist} for:item="child">
+                <div key={child.recordId}>
+                    <div class="table-wrapper">
+                        <table class="fl-table">
+                            <tbody>
+                                <tr>
+                                    <td data-label="Unit Name">
+                                        <lightning-input type="checkbox" name={child.objName} id={child.recordId}
+                                            value={child.isSelected} onchange={hanndlecheck}></lightning-input>
+                                    </td>
+                                    <td data-label="Object Name">
+                                        {child.objName}
+                                    </td>
+                                    <td data-label="Relationship Name">
+                                        {child.relationshipName}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </template>
+<div class="slds-align_absolute-center">
+    <lightning-button variant="brand" label="Clone" onclick={viewRecord}></lightning-button>
+</div>
+</div>
+</lightning-card>
+</template>
