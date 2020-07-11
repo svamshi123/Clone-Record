@@ -11,15 +11,10 @@ export default class CloneObject extends LightningElement {
     accid;
     valid;
     childlist;
-    childObject = false;
     recordId;
     childarr = [];
     Objectfileds;
-    fieldvalue;
-    fieldArray = [];
-    jsonFIled = {
-        "Name": ''
-    }
+    Object = {};
 
     @wire(getAllObjects)
     AllObjects;
@@ -29,8 +24,6 @@ export default class CloneObject extends LightningElement {
     }
 
     handleObjects(event) {
-        console.log("hai");
-        console.log(event.detail.value);
         getAccounts({ objectName: event.detail.value }).then((data) => {
             this.accountOptions = data;
         })
@@ -43,48 +36,34 @@ export default class CloneObject extends LightningElement {
                 this.accid = element.value;
             }
         }, this);
-        console.log(this.accid);
         cloneAccont({ accountid: this.accid }).then((data) => {
-            console.log(data.objName);
-            console.log(data);
             this.childlist = data;
-            console.log(this.childlist);
         });
         getObjecttFields({ objecttid: this.accid }).then((data) => {
-            console.log(data);
             this.Objectfileds = data;
         });
     }
 
     hanndlecheck(event) {
-        console.log(event.target.name);
-        console.log(event.target.id);
         this.recordId = event.target.id;
-        this.childObject = true;
         this.childarr.push(event.target.name);
     }
 
     handleFiled(event) {
-        console.log(event.target.name);
         var inp = this.template.querySelectorAll(".filedClass");
         inp.forEach(function(element) {
             if (event.target.name === element.name) {
-                //this.jsonFIled.Name = element.value;
-                this.fieldArray.push(element.value);
+                var key = element.name;
+                this.Object[key] = element.value;
             }
         }, this);
-        console.log(this.fieldArray);
     }
 
     viewRecord() {
-        console.log(this.childObject);
-        console.log(this.childarr);
-        console.log(this.fieldArray);
-        console.log(this.recordId);
         cloneWithChildren({
             childList: this.childarr,
             recId: this.recordId,
-            arrayfiled: this.fieldArray
+            arrayfiled: this.Object
         }).then(() => {
             this.dispatchEvent(
                 new ShowToastEvent({
