@@ -1,4 +1,6 @@
 public with sharing class CloneClass {
+
+
     @AuraEnabled(cacheable=true)
      public static List<OptionWrapper> getAllObjects(){
         List<OptionWrapper> sobjectname = new List<OptionWrapper>();
@@ -32,11 +34,9 @@ public with sharing class CloneClass {
         SObjectType contactType = Schema.getGlobalDescribe().get(parentObjName);
         Map<String,Schema.SObjectField> mfields = contactType.getDescribe().fields.getMap();
         for(String s : mfields.keySet()){
-            System.debug('s'+s);
             if(mfields.get(s).getDescribe().isUpdateable() && mfields.get(s).getDescribe().isCreateable()){
                 optionlist.add(new OptionWrapper(String.valueOf(mfields.get(s)),String.valueOf(mfields.get(s))));
             }
-            
         }
         return optionlist;
     }
@@ -73,19 +73,14 @@ public with sharing class CloneClass {
     }
 
     @AuraEnabled
-    public static Id cloneWithChildren(List<String> childList, String recId, List<String> arrayfiled){
-        System.debug(arrayfiled);
+    public static Id cloneWithChildren(List<String> childList, String recId,  Map<String,String> arrayfiled){
+       
         List<ChildObjectWrapper> slctdChildObjWrapperList = new List<ChildObjectWrapper>();
-        System.debug(recId);
         List<String> word = recId.split('-');
-        System.debug('word'+word);
         String parentId = word[0];
-        System.debug('ParentId'+ParentId);
-         List<ChildObjectWrapper> childObjWrapperListobj = cloneAccont(parentId);
-        System.debug(childList);
+        List<ChildObjectWrapper> childObjWrapperListobj = cloneAccont(parentId);
         String parentObjName = '';
         parentObjName = getObjectNameFromId(parentId);
-        System.debug(parentObjName);
           for(ChildObjectWrapper chldObj : childObjWrapperListobj){
               for(String s : childList){
                     if(chldObj.objName == s){
@@ -93,22 +88,16 @@ public with sharing class CloneClass {
                      }
                 }
             }
-            System.debug(slctdChildObjWrapperList);
-            List<Sobject> newclonedParentObj = new List<Sobject>();
             List<Sobject> clonedParentObj = cloneObject(parentObjName,parentId,true,null,null);
-            System.debug('clonedParentObj'+clonedParentObj);
-            System.debug('newclonedParentObj'+newclonedParentObj);
             insert clonedParentObj;
-            System.debug(clonedParentObj.get(0).Id);
             Id myId = clonedParentObj.get(0).Id;
             Schema.SObjectType sobjectType = myId.getSObjectType();
             String sobjectName = sobjectType.getDescribe().getName();
             List<SObject> record = Database.query('Select Id, Name From ' + sobjectName + ' Where Id = :myId');
-            System.debug(record);
-            System.debug('record'+record);
             SObject record1 = myId.getSObjectType().newSObject(myId);
-            record1.put('Name',arrayfiled[0]);
-            System.debug('record'+record1);
+            for(String str : arrayfiled.keySet()){
+                record1.put(str,arrayfiled.get(str));
+              }
             update record1;
         
             List<sobject> childObjList = new List<sobject>();
